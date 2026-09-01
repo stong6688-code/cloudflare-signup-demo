@@ -309,6 +309,35 @@ function verifyPassword() {
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
+
+        // 每次打开网页或刷新时，自动检测登录是否在 2 小时内
+window.addEventListener('DOMContentLoaded', () => {
+    const loginTime = localStorage.getItem('admin_login_time');
+    
+    if (loginTime) {
+        const timePassed = Date.now() - parseInt(loginTime, 10);
+        const twoHours = 2 * 60 * 60 * 1000; // 2小时的毫秒数 (7200000ms)
+        
+        // 如果过去的时间小于 2 小时，直接免登进入
+        if (timePassed < twoHours) {
+            document.getElementById('lockScreen').style.display = 'none';
+            document.getElementById('mainDashboard').style.display = 'block';
+            fetchAdminData(); // 自动拉取最新的 KV 云端数据
+            return;
+        }
+    }
+    
+    // 如果没有登录记录，或者已经超过 2 小时，保持原本的锁屏状态
+    document.getElementById('lockScreen').style.display = 'flex';
+    document.getElementById('mainDashboard').style.display = 'none';
+});
+
+// 可选功能：在后台大屏右侧或合适位置如果你想加一个“主动退出”按钮，可以调用这个函数
+function handleLogout() {
+    localStorage.removeItem('admin_login_time'); // 清除通行证
+    window.location.reload(); // 刷新页面重新锁屏
+}
+
     </script>
 </body>
 </html>
