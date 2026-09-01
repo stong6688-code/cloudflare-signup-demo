@@ -94,18 +94,24 @@
     <main class="container">
         <h1>活动在线预约</h1>
         <p class="subtitle">请填写下方真实信息完成报名</p>
+   
 
-        <!-- 表单区域 -->
+                <!-- 表单区域 -->
         <form id="signupForm" onsubmit="handleSubmit(event)">
-            <label for="username">姓名</label>
-            <input type="text" id="username" required placeholder="请输入您的姓名">
+            <div style="margin-bottom: 20px;">
+                <label for="username">姓名</label>
+                <input type="text" id="username" required placeholder="请输入您的姓名">
+            </div>
 
-            <label for="userphone">手机号</label>
-            <input type="tel" id="userphone" required placeholder="请输入11位手机号">
+            <div style="margin-bottom: 25px;">
+                <label for="userphone">手机号</label>
+                <input type="tel" id="userphone" required placeholder="请输入11位手机号">
+            </div>
 
-            <button type="submit" id="submitBtn">立即提交报名</button>
+            <button type="submit" id="submitBtn" style="width: 100%; margin: 0;">立即提交报名</button>
         </form>
 
+        
         <!-- 动态结果状态区 -->
         <div id="msgBox" style="display: none;" class="alert-box"></div>
         
