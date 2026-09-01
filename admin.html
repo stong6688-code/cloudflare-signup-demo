@@ -258,8 +258,27 @@
 
 ```html
 
-            <script>
-        // 前端代码里已经完全没有明文密码了！F12 随便看，没有任何泄漏风险。
+    <script>
+        // 云端密码安全架构 - 前端核心大脑（100% 修复显隐冲突版）
+
+        // 统一控制显示状态的“铁律函数”
+        function switchViewState(isLocked) {
+            const lockScreen = document.getElementById('lockScreen');
+            const mainDashboard = document.getElementById('mainDashboard');
+            const editModal = document.getElementById('editModal');
+
+            if (isLocked) {
+                // 锁定状态：死死隐藏大屏，只显示锁屏卡片
+                if (mainDashboard) mainDashboard.style.setProperty('display', 'none', 'important');
+                if (lockScreen) lockScreen.style.setProperty('display', 'flex', 'important');
+            } else {
+                // 解锁状态：死死隐藏锁屏，只显示数据大屏
+                if (lockScreen) lockScreen.style.setProperty('display', 'none', 'important');
+                if (mainDashboard) mainDashboard.style.setProperty('display', 'block', 'important');
+            }
+            // 确保修改弹窗默认是关闭的
+            if (editModal) editModal.style.setProperty('display', 'none', 'important');
+        }
 
         // 1. 登录验证（改用后端鉴权）
         async function verifyPassword() {
@@ -267,7 +286,6 @@
             const errorHint = document.getElementById('lockError');
             
             try {
-                // 将输入的密码安全发送给云端服务器审核
                 const res = await fetch('/api/admin', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -280,33 +298,29 @@
                     localStorage.setItem('admin_session_pwd', inputPwd);
                     localStorage.setItem('admin_login_time', Date.now().toString());
 
-                    document.getElementById('lockScreen').style.display = 'none';
-                    document.getElementById('mainDashboard').style.display = 'block';
+                    switchViewState(false); // 强制切换为解密状态
                     fetchAdminData(); // 同步加载数据
                 } else {
                     throw new Error();
                 }
             } catch (err) {
-                errorHint.style.display = 'block';
+                if (errorHint) errorHint.style.display = 'block';
                 document.getElementById('adminPassword').value = '';
             }
         }
 
-        // 2. 异步同步 KV 数据（带云端安全审计头）
+        // 2. 异步同步 KV 数据
         async function fetchAdminData() {
             const tbody = document.getElementById('userTableBody');
+            if (!tbody) return;
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#6b7280;">正在通过安全审计通道同步数据...</td></tr>`;
             
-            // 从本地提取暂存的验证密令
             const sessionPwd = localStorage.getItem('admin_session_pwd') || '';
 
             try {
                 const res = await fetch('/api/admin', {
                     method: 'GET',
-                    headers: { 
-                        // 把密码塞进请求头送往后端审查，如果后端对不上，直接拒绝吐出敏感名单
-                        'Authorization': sessionPwd 
-                    }
+                    headers: { 'Authorization': sessionPwd }
                 });
                 if (!res.ok) throw new Error();
                 const data = await res.json();
@@ -331,10 +345,58 @@
                 `).join('');
             } catch (err) {
                 tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#f87171; font-weight:600;">⚠️ 审计未通过：安全防线已拦截敏感数据拉取</td></tr>`;
+                switchViewState(true); // 如果 GET 请求鉴权失败，直接踢回锁屏页
             }
         }
 
-        // 3. 页面初始化自动无感登录校对
+        // 3. 执行异步删除
+        async function handleDelete(id) {
+            if (!confirm("⚠️ 确定要删除该用户的预约信息吗？此操作将实时从 Cloudflare KV 中抹去数据！")) return;
+            try {
+                const res = await fetch(`/api/manage?id=${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                alert(data.msg || "删除成功");
+                fetchAdminData(); 
+            } catch (err) {
+                alert("删除失败，请重试");
+            }
+        }
+
+        // 4. 修改数据弹窗控制
+        function openEditModal(id, name, phone) {
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editUsername').value = name;
+            document.getElementById('editUserphone').value = phone;
+            const modal = document.getElementById('editModal');
+            if (modal) modal.style.setProperty('display', 'flex', 'important');
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            if (modal) modal.style.setProperty('display', 'none', 'important');
+        }
+
+        // 5. 提交修改更新
+        async function submitEdit() {
+            const id = document.getElementById('editUserId').value;
+            const name = document.getElementById('editUsername').value;
+            const phone = document.getElementById('editUserphone').value;
+            try {
+                const res = await fetch('/api/manage', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, name, phone })
+                });
+                const data = await res.json();
+                alert(data.msg || "更新成功");
+                closeEditModal();
+                fetchAdminData(); 
+            } catch (err) {
+                alert("更新失败");
+            }
+        }
+
+        // 6. 页面初始化自动无感登录校对
         window.addEventListener('DOMContentLoaded', () => {
             const loginTime = localStorage.getItem('admin_login_time');
             const sessionPwd = localStorage.getItem('admin_session_pwd');
@@ -344,27 +406,26 @@
                 const twoHours = 2 * 60 * 60 * 1000; 
                 
                 if (timePassed < twoHours) {
-                    document.getElementById('lockScreen').style.display = 'none';
-                    document.getElementById('mainDashboard').style.display = 'block';
-                    fetchAdminData(); // 自动拉取
+                    switchViewState(false); // 2小时内免登，强力直接切到大屏
+                    fetchAdminData(); 
                     return;
                 }
             }
-            handleLogout(); // 超时或未登录，强制清理干净
+            handleLogout(); // 超过2小时，或者没有记录，执行彻底锁定清理
         });
 
-        // 登出清理
+        // 主动登出清理
         function handleLogout() {
             localStorage.removeItem('admin_login_time');
             localStorage.removeItem('admin_session_pwd');
-            document.getElementById('lockScreen').style.display = 'flex';
-            document.getElementById('mainDashboard').style.display = 'none';
+            switchViewState(true); // 强力切换回锁定卡片状态
         }
 
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
     </script>
+
 
 
 
