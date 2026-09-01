@@ -3,99 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>活动报名与管理系统22</title>
-    <!-- 使用更稳定的前端原生 JS 脚本，无需 Vue 编译，100% 兼容任何浏览器加载 -->
-    <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f6f9; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .nav-btn { float: right; background: #6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-        h2 { color: #007bff; margin-top: 0; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ced4da; border-radius: 6px; font-size: 16px; }
-        .btn-submit { width: 100%; background: #007bff; color: white; border: none; padding: 12px; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        .btn-submit:hover { background: #0056b3; }
-        .alert { padding: 12px; border-radius: 6px; margin-top: 20px; text-align: center; font-weight: bold; }
-        .alert-success { background: #d4edda; color: #155724; }
-        .alert-danger { background: #f8d7da; color: #721c24; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; border-bottom: 1px solid #dee2e6; text-align: left; }
-        th { background: #f8f9fa; }
-        .badge { background: #17a2b8; color: white; padding: 5px 10px; border-radius: 20px; font-size: 14px; }
-    </style>
+    <title>欢迎报名 - 官方在线活动预约</title>
+    <!-- 引入 Tailwind CSS (免编译 CDN 版) -->
+    <script src="https://tailwindcss.com"></script>
+    <script>
+        // 自定义 Tailwind 配置，方便后续一键改色
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <div class="container">
-        <!-- 切换按钮 -->
-        <button class="nav-btn" id="toggleBtn" onclick="toggleView()">切换到后台管理</button>
-        
-        <!-- 报名视图 -->
-        <div id="userView">
-            <h2>活动在线报名</h2>
-            <form id="signupForm" onsubmit="handleSubmit(event)">
-                <div class="form-group">
-                    <label>姓名</label>
-                    <input type="text" id="username" required placeholder="请输入您的姓名">
-                </div>
-                <div class="form-group">
-                    <label>手机号</label>
-                    <input type="tel" id="userphone" required placeholder="请输入您的手机号">
-                </div>
-                <button type="submit" class="btn-submit" id="submitBtn">立即报名</button>
-            </form>
-            <div id="msgBox" style="display: none;"></div>
-        </div>
+<body class="bg-gradient-to-tr from-slate-900 via-indigo-950 to-slate-900 min-h-screen flex items-center justify-center p-4 sm:p-6 antialiased">
 
-        <!-- 后台视图 -->
-        <div id="adminView" style="display: none;">
-            <h2>后台管理看板 <button onclick="fetchAdminData()" style="font-size:12px; cursor:pointer;">🔄 刷新</button></h2>
-            <p>总报名人数：<span class="badge" id="totalCount">0</span></p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>姓名</th>
-                        <th>手机号</th>
-                        <th>报名时间</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody">
-                    <tr>
-                        <td colspan="3" style="text-align:center; color:#999;">正在加载数据...</td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- 核心卡片容器 (带现代渐变微光边框效果) -->
+    <div class="relative w-full max-w-md">
+        <!-- 背景炫光装饰，增添科技感（可选） -->
+        <div class="absolute -top-10 -left-10 w-40 h-40 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+
+        <!-- 主卡片 (毛玻璃/半透明磨砂效果) -->
+        <div class="relative backdrop-blur-md bg-slate-900/80 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8">
+            
+            <!-- 头部 Title 区域 -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-brand-500/10 text-brand-500 mb-3 border border-brand-500/20">
+                    <!-- 现代化的日历/报名小图标 -->
+                    <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold text-white tracking-tight">活动在线预约</h1>
+                <p class="text-slate-400 text-sm mt-1">请填写下方真实信息完成报名</p>
+            </div>
+
+            <!-- 表单区域 -->
+            <form id="signupForm" onsubmit="handleSubmit(event)" class="space-y-5">
+                <!-- 姓名输入框 -->
+                <div>
+                    <label class="block text-slate-300 text-sm font-medium mb-2" for="username">姓名</label>
+                    <div class="relative">
+                        <input type="text" id="username" required 
+                            class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition duration-200"
+                            placeholder="请输入您的姓名">
+                    </div>
+                </div>
+
+                <!-- 手机号输入框 -->
+                <div>
+                    <label class="block text-slate-300 text-sm font-medium mb-2" for="userphone">手机号</label>
+                    <div class="relative">
+                        <input type="tel" id="userphone" required 
+                            class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition duration-200"
+                            placeholder="请输入11位手机号">
+                    </div>
+                </div>
+
+                <!-- 提交按钮 (带细腻的渐变和阴影效果) -->
+                <div class="pt-2">
+                    <button type="submit" id="submitBtn" 
+                        class="w-full bg-gradient-to-r from-brand-500 to-indigo-600 hover:from-brand-600 hover:to-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-brand-500/20 active:scale-[0.98] transition duration-150 flex items-center justify-center space-x-2 cursor-pointer">
+                        <span>立即提交报名</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- 动态结果状态弹窗 -->
+            <div id="msgBox" style="display: none;" class="mt-5 p-4 rounded-xl text-sm font-medium border text-center transition duration-300"></div>
         </div>
+        
+        <!-- 底部版权或弱提示 -->
+        <p class="text-center text-slate-500 text-xs mt-6">© 2026 基于 Cloudflare 全栈架构提供安全技术支持</p>
     </div>
 
     <script>
-        let isAdminView = false;
-
-        // 视图切换
-        function toggleView() {
-            isAdminView = !isAdminView;
-            const userView = document.getElementById('userView');
-            const adminView = document.getElementById('adminView');
-            const toggleBtn = document.getElementById('toggleBtn');
-            
-            if (isAdminView) {
-                userView.style.display = 'none';
-                adminView.style.display = 'block';
-                toggleBtn.innerText = '切换到用户报名';
-                fetchAdminData();
-            } else {
-                userView.style.display = 'block';
-                adminView.style.display = 'none';
-                toggleBtn.innerText = '切换到后台管理';
-            }
-        }
-
-        // 前端表单提交 (原生 Fetch 请求)
+        // 前端表单提交 (保持与后端 API 的完美对接)
         async function handleSubmit(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitBtn');
             const msgBox = document.getElementById('msgBox');
             
-            submitBtn.innerText = '提交中...';
+            // 提交状态优化
+            submitBtn.innerHTML = `
+                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://w3.org" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>正在提交安全验证...</span>
+            `;
             submitBtn.disabled = true;
             msgBox.style.display = 'none';
 
@@ -114,52 +119,23 @@
                 
                 msgBox.style.display = 'block';
                 if (res.ok) {
-                    msgBox.className = 'alert alert-success';
-                    msgBox.innerText = data.msg || '报名成功！';
+                    // 成功状态样式优化
+                    msgBox.className = 'mt-5 p-4 rounded-xl text-sm font-medium border text-center bg-emerald-500/10 border-emerald-500/30 text-emerald-400';
+                    msgBox.innerText = '🎉 ' + (data.msg || '报名成功！');
                     document.getElementById('signupForm').reset();
                 } else {
-                    msgBox.className = 'alert alert-danger';
-                    msgBox.innerText = data.msg || '报名失败';
+                    // 失败状态样式优化
+                    msgBox.className = 'mt-5 p-4 rounded-xl text-sm font-medium border text-center bg-rose-500/10 border-rose-500/30 text-rose-400';
+                    msgBox.innerText = '❌ ' + (data.msg || '报名失败，请检查输入');
                 }
             } catch (err) {
                 msgBox.style.display = 'block';
-                msgBox.className = 'alert alert-danger';
-                msgBox.innerText = '网络错误，请稍后再试';
+                msgBox.className = 'mt-5 p-4 rounded-xl text-sm font-medium border text-center bg-rose-500/10 border-rose-500/30 text-rose-400';
+                msgBox.innerText = '⚠️ 网络连接超时，请稍后再试';
             } finally {
-                submitBtn.innerText = '立即报名';
+                submitBtn.innerHTML = '<span>立即提交报名</span>';
                 submitBtn.disabled = false;
             }
-        }
-
-        // 后台数据拉取 (原生 Fetch 请求)
-        async function fetchAdminData() {
-            const tbody = document.getElementById('userTableBody');
-            try {
-                const res = await fetch('/api/admin');
-                if (!res.ok) throw new Error('加载失败');
-                const data = await res.json();
-                
-                document.getElementById('totalCount').innerText = data.total;
-                
-                if (data.users.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#999;">暂无报名数据</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = data.users.map(u => `
-                    <tr>
-                        <td>${escapeHtml(u.name)}</td>
-                        <td>${escapeHtml(u.phone)}</td>
-                        <td>${new Date(u.time).toLocaleString()}</td>
-                    </tr>
-                `).join('');
-            } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:red;">无法获取数据，请确保已正确绑定 KV 空间</td></tr>`;
-            }
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
     </script>
 </body>
