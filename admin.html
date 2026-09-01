@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SECURITY CONTROL CENTER - 数据智脑中心</title>
     <style>
-        /* 1. 全局高端科技暗黑背景 */
+        /* 全局高端科技暗黑背景 */
         body {
             background: radial-gradient(circle at 50% 50%, #111827 0%, #030712 100%) !important;
             min-height: 100vh;
@@ -23,14 +23,13 @@
         .wrapper {
             width: 100%;
             max-width: 1000px;
-            display: flex;
-            justify-content: center;
         }
 
-        /* 2. 锁屏验证卡片：大气全宽流线型 */
+        /* 锁屏验证卡片 */
         .lock-container {
             width: 100%;
             max-width: 520px;
+            margin: 60px auto 0 auto;
             background: rgba(17, 24, 39, 0.75);
             border: 1px solid rgba(59, 130, 246, 0.25);
             border-radius: 24px;
@@ -60,31 +59,26 @@
         .lock-container h3 { font-size: 24px; font-weight: 800; color: #ffffff; margin: 0 0 8px 0; }
         .lock-container p { color: #9ca3af; font-size: 14px; margin: 0 0 35px 0; }
 
-        /* 3. 豪华全宽比例输入框 */
-        input[type="password"] {
+        /* 豪华全宽比例输入框 */
+        input[type="password"], input[type="text"], input[type="tel"] {
             width: 100%;
             box-sizing: border-box;
-            background: rgba(3, 7, 18, 0.6);
-            border: 1px solid #374151;
-            color: #ffffff;
-            border-radius: 12px;
-            padding: 16px 20px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s ease;
-            text-align: center;
-            letter-spacing: 6px;
+            background: rgba(3, 7, 18, 0.6) !important;
+            border: 1px solid #374151 !important;
+            color: #ffffff !important;
+            border-radius: 12px !important;
+            padding: 14px 20px !important;
+            font-size: 16px !important;
+            outline: none !important;
+            transition: all 0.3s ease !important;
         }
-
-        input[type="password"]:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25), 0 0 20px rgba(59, 130, 246, 0.1);
-            background: rgba(3, 7, 18, 0.8);
-        }
-
+        input[type="password"] { text-align: center; letter-spacing: 6px; }
         input[type="password"]::placeholder { letter-spacing: 0px; color: #4b5563; }
+        input[type="password"]:focus, input[type="text"]:focus, input[type="tel"]:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+        }
 
-        /* 4. 极光悬停微光按钮 */
         .btn-unlock {
             width: 100%;
             background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 50%, #4f46e5 100%);
@@ -101,16 +95,15 @@
             letter-spacing: 2px;
             margin-top: 20px;
         }
-
         .btn-unlock:hover {
             background-position: right center;
-            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4), 0 0 15px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
             transform: translateY(-1px);
         }
 
         #lockError { color: #f87171; font-size: 13px; margin: 15px 0 0 0; font-weight: 600; }
 
-        /* 5. 数据主看板大屏样式 */
+        /* 数据主看板大屏样式 */
         .dashboard {
             width: 100%;
             background: rgba(17, 24, 39, 0.6);
@@ -121,13 +114,14 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             box-sizing: border-box;
+            animation: panelSlideUp 0.5s ease;
         }
 
         .dash-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 25px; margin-bottom: 35px; }
         .dash-header h1 { font-size: 26px; font-weight: 900; margin: 0; background: linear-gradient(90deg, #ffffff, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         .btn-refresh { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-weight: 600; padding: 10px 20px; border-radius: 10px; cursor: pointer; transition: all 0.2s; }
-        .btn-refresh:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); }
+        .btn-refresh:hover { background: rgba(255, 255, 255, 0.1); }
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-bottom: 40px; }
         .stat-card { background: rgba(3, 7, 18, 0.4); border: 1px solid rgba(255, 255, 255, 0.03); border-radius: 16px; padding: 25px; position: relative; }
@@ -135,49 +129,46 @@
         .stat-label { color: #9ca3af; font-size: 14px; font-weight: 600; letter-spacing: 1px; }
         .stat-value { color: #ffffff; font-size: 42px; font-weight: 900; margin-top: 10px; font-family: monospace; }
 
+        /* 精细表格 */
         .table-container { overflow-x: auto; background: rgba(3, 7, 18, 0.3); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 16px; }
         table { width: 100%; border-collapse: collapse; margin: 0; text-align: left; }
         th { background: rgba(255, 255, 255, 0.02); color: #9ca3af; font-weight: 700; font-size: 13px; padding: 18px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); letter-spacing: 1px; }
         td { padding: 18px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 15px; color: #e5e7eb; }
         tr:last-child td { border-bottom: none; }
-        tr:hover td { background: rgba(255, 255, 255, 0.01); }
+        
+        /* 核心改动：完美的精细化增删改操作按钮样式 */
+        .btn-edit { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; margin-right: 8px; transition: all 0.2s; }
+        .btn-edit:hover { background: #2563eb; color: #fff; }
+        .btn-delete { background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+        .btn-delete:hover { background: #dc2626; color: #fff; }
 
         @keyframes panelSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-                .btn-edit { background: #1e3a8a; color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; margin-right: 5px; }
-        .btn-edit:hover { background: #2563eb; color: #fff; }
-        .btn-delete { background: #451a03; color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-delete:hover { background: #991b1b; color: #fff; }
-
     </style>
 </head>
 <body>
     <div class="wrapper">
         
-        <!-- 1. 独立的安全口令解锁屏 -->
+        <!-- 安全口令解锁屏 -->
         <div id="lockScreen" class="lock-container">
             <div class="secure-icon">
-                <!-- 原生精细安全盾牌 SVG 矢量图 -->
                 <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 28px; height: 28px;">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                 </svg>
             </div>
             <h3>控制台安全验证</h3>
             <p>请输入最高控制口令以同步云端 KV 数据库</p>
-            
             <input type="password" id="adminPassword" placeholder="ENTER ACCESS CODE">
             <button class="btn-unlock" onclick="verifyPassword()">验证并解锁</button>
             <p id="lockError" style="display:none;">⚠️ 口令错误，访问请求已被系统拦截</p>
         </div>
 
-        <!-- 2. 数据主控制中心 (输入正确密码后切入) -->
+        <!-- 数据主控制中心 -->
         <div id="mainDashboard" class="dashboard" style="display: none;">
             <div class="dash-header">
                 <h1>活动数据智脑中心</h1>
                 <button class="btn-refresh" onclick="fetchAdminData()">🔄 刷新云端数据</button>
             </div>
 
-            <!-- 数据大屏上方统计卡片 -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">实时预约总人数</div>
@@ -189,53 +180,54 @@
                 </div>
             </div>
 
-            <!-- 顶顶拉满、左右对齐的精细数据表格 -->
             <div class="table-container">
-                                <table>
+                <table>
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>预约姓名</th>
                             <th>联络电话</th>
                             <th>全时区提交时间</th>
-                            <th style="text-align: center;">内部操作</th> <!-- 新增操作表头 -->
+                            <th style="text-align: center; width: 180px;">内部操作</th>
                         </tr>
                     </thead>
                     <tbody id="userTableBody">
-                        <!-- 动态数据将插入到这里 -->
+                        <tr>
+                            <td colspan="5" style="text-align:center; color:#6b7280;">等待口令激活...</td>
+                        </tr>
                     </tbody>
                 </table>
-
-                
-               
             </div>
         </div>
-
     </div>
+
+    <!-- 独立的修改数据模态框弹窗 (使用了标准的 fixed 绝对居中布局，绝不产生样式冲突) -->
+    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 7, 18, 0.8); backdrop-filter: blur(12px); z-index: 9999; align-items: center; justify-content: center;">
+### 🧩 第二部分：后端数据联动大脑控制逻辑 (JavaScript)
+
+这一部分完全打通了与 Cloudflare Functions 的 `DELETE` 和 `PUT` 交互。请紧接着上面的代码下方粘上去，完成文件的闭合：
+
+```html
     <script>
-        // 【控制台管理密码】你可以随意在这里修改你的进入口令
         const CORRECT_PASSWORD = "CN_123456_Cloudflare"; 
 
-        // 1. 口令本地安全校验机制
         function verifyPassword() {
             const inputPwd = document.getElementById('adminPassword').value;
             const errorHint = document.getElementById('lockError');
-            
             if (inputPwd === CORRECT_PASSWORD) {
                 document.getElementById('lockScreen').style.display = 'none';
                 document.getElementById('mainDashboard').style.display = 'block';
-                fetchAdminData(); // 校验成功，立即打通云数据库
+                fetchAdminData();
             } else {
                 errorHint.style.display = 'block';
                 document.getElementById('adminPassword').value = '';
             }
         }
 
-        // 2. 从 Cloudflare 异步同步 KV 数据的核心逻辑
-               // 升级版数据渲染逻辑（带操作按钮绑定）
+        // 核心改动：渲染函数完美输出操作按钮
         async function fetchAdminData() {
             const tbody = document.getElementById('userTableBody');
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#6b7280;">正在与远程 Cloudflare 建立通道...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#6b7280;">正在与远程 Cloudflare Workers KV 建立安全同步通道...</td></tr>`;
             try {
                 const res = await fetch('/api/admin');
                 if (!res.ok) throw new Error();
@@ -243,7 +235,7 @@
                 document.getElementById('totalCount').innerText = data.total;
                 
                 if (!data.users || data.users.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#6b7280;">当前未检测到任何预约记录</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#6b7280;">当前数据空间内未检测到任何预约记录</td></tr>`;
                     return;
                 }
 
@@ -253,7 +245,6 @@
                         <td style="font-weight:700; color:#ffffff;">${escapeHtml(u.name)}</td>
                         <td style="color:#9ca3af; font-family:monospace;">${escapeHtml(u.phone)}</td>
                         <td style="color:#6b7280; font-size:14px;">${new Date(u.time).toLocaleString()}</td>
-                        <!-- 新增操作按钮，精准传入当前行的 KV ID -->
                         <td style="text-align: center;">
                             <button class="btn-edit" onclick="openEditModal('${u.id}', '${escapeHtml(u.name)}', '${escapeHtml(u.phone)}')">编辑</button>
                             <button class="btn-delete" onclick="handleDelete('${u.id}')">删除</button>
@@ -261,41 +252,41 @@
                     </tr>
                 `).join('');
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#f87171;">⚠️ 数据库同步中止</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#f87171; font-weight:600;">⚠️ 数据库同步中止，请核对 Edge KV 绑定链条</td></tr>`;
             }
         }
 
-        // 执行删除操作
+        // 执行异步删除
         async function handleDelete(id) {
-            if (!confirm("⚠️ 确定要删除该用户的预约信息吗？此操作无法撤销！")) return;
+            if (!confirm("⚠️ 确定要删除该用户的预约信息吗？此操作将实时从 Cloudflare KV 中抹去数据！")) return;
             try {
                 const res = await fetch(`/api/manage?id=${id}`, { method: 'DELETE' });
                 const data = await res.json();
-                alert(data.msg);
-                fetchAdminData(); // 刷新列表
+                alert(data.msg || "删除成功");
+                fetchAdminData(); 
             } catch (err) {
-                alert("删除失败，请稍后再试");
+                alert("删除失败，请重试");
             }
         }
 
-        // 打开修改弹窗并回显数据
+        // 弹窗控制
         function openEditModal(id, name, phone) {
             document.getElementById('editUserId').value = id;
             document.getElementById('editUsername').value = name;
             document.getElementById('editUserphone').value = phone;
-            document.getElementById('editModal').style.display = 'block';
+            // 使用 flex 展示以激活绝对居中
+            document.getElementById('editModal').style.display = 'flex';
         }
 
         function closeEditModal() {
             document.getElementById('editModal').style.display = 'none';
         }
 
-        // 提交修改
+        // 提交修改更新
         async function submitEdit() {
             const id = document.getElementById('editUserId').value;
             const name = document.getElementById('editUsername').value;
             const phone = document.getElementById('editUserphone').value;
-
             try {
                 const res = await fetch('/api/manage', {
                     method: 'PUT',
@@ -303,40 +294,17 @@
                     body: JSON.stringify({ id, name, phone })
                 });
                 const data = await res.json();
-                alert(data.msg);
+                alert(data.msg || "更新成功");
                 closeEditModal();
-                fetchAdminData(); // 刷新列表
+                fetchAdminData(); 
             } catch (err) {
                 alert("更新失败");
             }
         }
 
-
-        // 4. 安全防护：防止有人用特殊名字注入非法字符
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
     </script>
-
-        <!-- 独立的修改数据模态框弹窗 (默认隐藏) -->
-    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 999; flex-items: center; justify-content: center; display: none;">
-        <div style="background: #111827; border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 16px; width: 90%; max-width: 400px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: 15% auto;">
-            <h4 style="color:#fff; margin-top:0; margin-bottom:20px;">修改客户预约信息</h4>
-            <input type="hidden" id="editUserId">
-            <div style="margin-bottom: 15px;">
-                <label style="color:#9ca3af; font-size:13px; display:block; margin-bottom:5px;">姓名</label>
-                <input type="text" id="editUsername" style="letter-spacing:0; padding:10px; font-size:14px;">
-            </div>
-            <div style="margin-bottom: 25px;">
-                <label style="color:#9ca3af; font-size:13px; display:block; margin-bottom:5px;">手机号</label>
-                <input type="tel" id="editUserphone" style="letter-spacing:0; padding:10px; font-size:14px;">
-            </div>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="closeEditModal()" style="background:#374151; border:none; flex:1; padding:10px; border-radius:8px; cursor:pointer;">取消</button>
-                <button onclick="submitEdit()" style="background:#3b82f6; border:none; flex:1; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold;">保存更新</button>
-            </div>
-        </div>
-    </div>
-
 </body>
 </html>
