@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>活动报名与管理系统</title>
+    <script src="https://jsdelivr.net"></script>
+    <script src="https://jsdelivr.net"></script>
+    <link href="https://jsdelivr.net" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div id="app" class="container py-5">
+        <!-- 导航栏 -->
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-outline-secondary btn-sm" @click="isAdmin = !isAdmin">
+                {{ isAdmin ? '切换到用户报名' : '切换到后台管理' }}
+            </button>
+        </div>
+
+        <!-- 前端报名表单 -->
+        <div v-if="!isAdmin" class="card shadow-sm mx-auto" style="max-width: 500px;">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h4 class="mb-0">活动在线报名</h4>
+            </div>
+            <div class="card-body p-4">
+                <form @submit.prevent="submitForm">
+                    <div class="mb-3">
+                        <label class="form-label">姓名</label>
+                        <input type="text" class="form-control" v-model="form.name" required placeholder="请输入您的姓名">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">手机号</label>
+                        <input type="tel" class="form-control" v-model="form.phone" required placeholder="请输入手机号">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" :disabled="loading">
+                        {{ loading ? '提交中...' : '立即报名' }}
+                    </button>
+                </form>
+                <div v-if="message" :class="'alert mt-3 ' + (isError ? 'alert-danger' : 'alert-success')">
+                    {{ message }}
+                </div>
+            </div>
+        </div>
+
+        <!-- 后台管理看板 -->
+        <div v-else class="card shadow-sm">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">后台管理看板</h4>
+                <button class="btn btn-light btn-sm" @click="fetchData">刷新数据</button>
+            </div>
+            <div class="card-body">
+                <!-- 统计卡片 -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card bg-info text-white p-3 text-center">
+                            <h6>总报名人数</h6>
+                            <h2>{{ stats.total }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <!-- 数据表格 -->
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>手机号</th>
+                                <th>报名时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="user in users" :key="user.time">
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.phone }}</td>
+                                <td>{{ formatTime(user.time) }}</td>
+                            </tr>
+                            <tr v-if="users.length === 0">
+                                <td colspan="3" class="text-center text-muted">暂无报名数据</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cloudflare Pages Functions 后端逻辑放置在独立的接口文件里，但为了在Pages里能够免编译运行，我们稍后在Cloudflare后台直接配置 -->
+    <script>
+        const { createApp, ref, reactive, watch } = Vue;
+        createApp({
+            setup() {
+                const isAdmin = ref(false);
+                const loading = ref(false);
+                const message = ref('');
+                const isError = ref(false);
+                const form = reactive({ name: '', phone: '' });
+                const users = ref([]);
+                const stats = reactive({ total: 0 });
+
+                const submitForm = async () => {
+                    loading.value = true;
+                    message.value = '';
+                    try {
+                        const res = await axios.post('/api/submit', form);
+                        message.value = res.data.msg;
+                        isError.value = false;
+                        form.name = '';
+                        form.phone = '';
+                    } catch (err) {
+                        message.value = err.response?.data?.msg || '提交失败';
+                        isError.value = true;
+                    } finally {
+                        loading.value = false;
+                    }
+                };
+
+                const fetchData = async () => {
+                    try {
+                        const res = await axios.get('/api/admin');
+                        users.value = res.data.users;
+                        stats.total = res.data.total;
+                    } catch (err) {
+                        alert('获取数据失败');
+                    }
+                };
+
+                watch(isAdmin, (newVal) => {
+                    if (newVal) fetchData();
+                });
+
+                const formatTime = (ts) => new Date(ts).toLocaleString();
+
+                return { isAdmin, loading, message, isError, form, users, stats, submitForm, fetchData, formatTime };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
