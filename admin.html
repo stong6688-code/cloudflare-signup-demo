@@ -232,35 +232,85 @@
         }
 
         // 2. 从 Cloudflare 异步同步 KV 数据的核心逻辑
+               // 升级版数据渲染逻辑（带操作按钮绑定）
         async function fetchAdminData() {
             const tbody = document.getElementById('userTableBody');
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#6b7280;">正在与远程 Cloudflare Workers KV 建立安全同步通道...</td></tr>`;
-            
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#6b7280;">正在与远程 Cloudflare 建立通道...</td></tr>`;
             try {
                 const res = await fetch('/api/admin');
                 if (!res.ok) throw new Error();
                 const data = await res.json();
-                
                 document.getElementById('totalCount').innerText = data.total;
                 
                 if (!data.users || data.users.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#6b7280;">当前数据空间内未检测到任何预约记录</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#6b7280;">当前未检测到任何预约记录</td></tr>`;
                     return;
                 }
 
-                // 3. 将同步的数据转换并完美渲染
                 tbody.innerHTML = data.users.map((u, index) => `
                     <tr>
                         <td style="color:#4b5563; font-weight:700; font-family:monospace;">#${String(index + 1).padStart(3, '0')}</td>
                         <td style="font-weight:700; color:#ffffff;">${escapeHtml(u.name)}</td>
                         <td style="color:#9ca3af; font-family:monospace;">${escapeHtml(u.phone)}</td>
                         <td style="color:#6b7280; font-size:14px;">${new Date(u.time).toLocaleString()}</td>
+                        <!-- 新增操作按钮，精准传入当前行的 KV ID -->
+                        <td style="text-align: center;">
+                            <button class="btn-edit" onclick="openEditModal('${u.id}', '${escapeHtml(u.name)}', '${escapeHtml(u.phone)}')">编辑</button>
+                            <button class="btn-delete" onclick="handleDelete('${u.id}')">删除</button>
+                        </td>
                     </tr>
                 `).join('');
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#f87171; font-weight:600;">⚠️ 数据库同步中止，请核对 Edge KV 绑定链条</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#f87171;">⚠️ 数据库同步中止</td></tr>`;
             }
         }
+
+        // 执行删除操作
+        async function handleDelete(id) {
+            if (!confirm("⚠️ 确定要删除该用户的预约信息吗？此操作无法撤销！")) return;
+            try {
+                const res = await fetch(`/api/manage?id=${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                alert(data.msg);
+                fetchAdminData(); // 刷新列表
+            } catch (err) {
+                alert("删除失败，请稍后再试");
+            }
+        }
+
+        // 打开修改弹窗并回显数据
+        function openEditModal(id, name, phone) {
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editUsername').value = name;
+            document.getElementById('editUserphone').value = phone;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // 提交修改
+        async function submitEdit() {
+            const id = document.getElementById('editUserId').value;
+            const name = document.getElementById('editUsername').value;
+            const phone = document.getElementById('editUserphone').value;
+
+            try {
+                const res = await fetch('/api/manage', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, name, phone })
+                });
+                const data = await res.json();
+                alert(data.msg);
+                closeEditModal();
+                fetchAdminData(); // 刷新列表
+            } catch (err) {
+                alert("更新失败");
+            }
+        }
+
 
         // 4. 安全防护：防止有人用特殊名字注入非法字符
         function escapeHtml(str) {
