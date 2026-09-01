@@ -211,18 +211,22 @@
     <script>
         const CORRECT_PASSWORD = "CN_123456_Cloudflare"; 
 
-        function verifyPassword() {
-            const inputPwd = document.getElementById('adminPassword').value;
-            const errorHint = document.getElementById('lockError');
-            if (inputPwd === CORRECT_PASSWORD) {
-                document.getElementById('lockScreen').style.display = 'none';
-                document.getElementById('mainDashboard').style.display = 'block';
-                fetchAdminData();
-            } else {
-                errorHint.style.display = 'block';
-                document.getElementById('adminPassword').value = '';
-            }
-        }
+function verifyPassword() {
+    const inputPwd = document.getElementById('adminPassword').value;
+    const errorHint = document.getElementById('lockError');
+    
+    if (inputPwd === CORRECT_PASSWORD) {
+        // 【核心升级】：登录成功，记录当前时间戳到 localStorage 
+        localStorage.setItem('admin_login_time', Date.now().toString());
+
+        document.getElementById('lockScreen').style.display = 'none';
+        document.getElementById('mainDashboard').style.display = 'block';
+        fetchAdminData();
+    } else {
+        errorHint.style.display = 'block';
+        document.getElementById('adminPassword').value = '';
+    }
+}
 
         // 核心改动：渲染函数完美输出操作按钮
         async function fetchAdminData() {
